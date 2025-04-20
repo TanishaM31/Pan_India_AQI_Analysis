@@ -1,5 +1,5 @@
-setwd("C:/Users/TANISHA MANNA/OneDrive/Desktop/R/R project")  # replace with your folder path
-install.packages("tidyverse")  # if not already installed
+setwd("C:/Users/TANISHA MANNA/OneDrive/Desktop/R/R project")
+install.packages("tidyverse")
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
@@ -64,3 +64,43 @@ ggplot(monthly_aqi, aes(x = Month, y = Average_AQI)) +
   theme_minimal() +
   labs(title = "Monthly Average AQI Across India",
        x = "Month", y = "Average AQI")
+# ---------------------- AQI PREDICTION START ----------------------
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
+# Step 1: Prepare Data for Regression
+pollution_data <- city_day_clean %>%
+  select(AQI, PM2.5, PM10, NO, NO2, NOx, NH3, CO, SO2, O3) %>%
+  drop_na()
+
+# Step 2: Split into Train & Test Sets
+set.seed(123)
+sample_index <- sample(1:nrow(pollution_data), 0.8 * nrow(pollution_data))
+train_data <- pollution_data[sample_index, ]
+test_data <- pollution_data[-sample_index, ]
+
+# Step 3: Train Linear Regression Model
+aqi_model <- lm(AQI ~ ., data = train_data)
+summary(aqi_model)  # View model performance
+
+# Step 4: Predict on Test Data
+predicted_aqi <- predict(aqi_model, newdata = test_data)
+
+# Step 5: Evaluate Model
+actual_aqi <- test_data$AQI
+rmse <- sqrt(mean((predicted_aqi - actual_aqi)^2))
+r_squared <- 1 - sum((actual_aqi - predicted_aqi)^2) / sum((actual_aqi - mean(actual_aqi))^2)
+
+print(paste("RMSE:", round(rmse, 2)))
+print(paste("R-squared:", round(r_squared, 3)))
+
+# Step 6: Plot Actual vs Predicted AQI
+ggplot(data = NULL, aes(x = actual_aqi, y = predicted_aqi)) +
+  geom_point(alpha = 0.5, color = "darkblue") +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+  labs(x = "Actual AQI", y = "Predicted AQI", title = "Actual vs Predicted AQI") +
+  theme_minimal()
+
+# ---------------------- AQI PREDICTION END ----------------------
