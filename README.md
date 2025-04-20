@@ -3,7 +3,6 @@
 This repository contains an academic project that analyzes the Air Quality Index (AQI) across major Indian cities using R. The study explores pollution patterns and implements a linear regression-based prediction approach using AQI-related features.
 
 ---
-
 ## 📊 Dataset
 
 The dataset used in this project is sourced from the [Open Government Data Platform India (data.gov.in)](https://data.gov.in/resources/daily-city-wise-air-quality-index-aqi-2015-2020).
